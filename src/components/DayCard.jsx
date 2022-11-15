@@ -22,10 +22,9 @@ const habits = [
         name: "Take Supplements"
     }
 ]; // This data will be fetched from server api, this array is a temporary solution
-const baseUrl = "http://127.0.0.1:8000/api/";
 
 export default function DayCard(props) {
-    const { dateString, newMonth, isToday } = props;
+    const { dateString, newMonth, isToday, registeredHabits } = props;
     const date = new Date(dateString);
 
     const totalAmountOfHabits = habits.length;
@@ -41,31 +40,31 @@ export default function DayCard(props) {
         useState(0);
 
     useEffect(() => {
-        // api calls
-        // const fetchApi = async () => {
-        //     try {
-        //         const res = await fetch(
-        //             `${baseUrl}registered-habits?date=${date}`
-        //         );
-        //         const data = await res.json();
+        let newCheckedHabits = [...checkedHabits];
+        for (let i = 0; i < checkedHabits.length; i++) {
+            for (let j = 0; j < registeredHabits.length; j++) {
+                if (i === registeredHabits[j].habit_id - 1) {
+                    newCheckedHabits[i] = 1;
+                }
+            }
+        }
 
-        //         console.log({ data });
-        //     } catch (e) {
-        //         console.log(e);
-        //     }
-        // };
+        setCheckedHabits(newCheckedHabits);
+    }, [registeredHabits]);
 
-        // fetchApi();
-
+    useEffect(() => {
         const amountOfCheckedHabits = checkedHabits.reduce(
-            (prevValue, currValue) => prevValue + currValue,
-            0
+            (prevValue, currValue) => prevValue + currValue
         );
 
         setPercentageOfHabitsCompleted(
             Math.round((amountOfCheckedHabits / totalAmountOfHabits) * 100)
         );
-    }, [checkedHabits]);
+
+        // call api for post to add registered habits
+        // (should skip the first 4 times its ran or check if checkedHabits changed from initial state)
+        console.log("api called (test)");
+    }, [checkedHabits, totalAmountOfHabits]);
 
     return (
         <div className='day-card' id={isToday ? "today" : ""}>
@@ -106,19 +105,23 @@ export default function DayCard(props) {
                                         type='checkbox'
                                         name={habit.name}
                                         id={habit.id}
-                                        value={checkedHabits[habit.id - 1]}
                                         onChange={e => {
-                                            let checkedHabitsNewState =
-                                                checkedHabits.slice();
+                                            let checkedHabitsNewState = [
+                                                ...checkedHabits
+                                            ];
 
                                             checkedHabitsNewState[
                                                 habit.id - 1
-                                            ] = e.target.value == 1 ? 0 : 1;
+                                            ] =
+                                                e.target.checked === true
+                                                    ? 1
+                                                    : 0;
 
                                             setCheckedHabits(
                                                 checkedHabitsNewState
                                             );
                                         }}
+                                        checked={checkedHabits[habit.id - 1]}
                                     />
                                 </span>
                                 <span>{habit.name}</span>

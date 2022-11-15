@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DayCard from "./DayCard";
 
+const API_URL = "http://127.0.0.1:8000/api/";
 const currYear = 2022;
 const dateObj = new Date();
 const dates = [];
 
-monthsLoop: for (let m = 1; m <= 12; m++) {
+monthsLoop: for (let m = 11; m <= 12; m++) {
     let monthDays;
 
     switch (m) {
@@ -45,13 +46,15 @@ monthsLoop: for (let m = 1; m <= 12; m++) {
         case 12:
             monthDays = 31;
             break;
+        default:
+            break;
     }
 
-    daysLoop: for (let d = 1; d <= monthDays; d++) {
+    for (let d = 15; d <= monthDays; d++) {
         let isToday =
-            dateObj.getDate() == d &&
-            dateObj.getFullYear() == currYear &&
-            dateObj.getMonth() + 1 == m;
+            dateObj.getDate() === d &&
+            dateObj.getFullYear() === currYear &&
+            dateObj.getMonth() + 1 === m;
 
         dates.push({
             day: d,
@@ -65,6 +68,22 @@ monthsLoop: for (let m = 1; m <= 12; m++) {
 
 export default function CalendarSection() {
     let prevMonth;
+    const [fetchedRegisteredHabits, setFetchedRegisteredHabits] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await fetch(`${API_URL}registered-habits`);
+                const data = await res.json();
+
+                setFetchedRegisteredHabits(data);
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     return (
         <section className='calendar-section'>
@@ -72,14 +91,31 @@ export default function CalendarSection() {
                 {dates.map((date, index) => {
                     let newMonth = false;
                     let isToday =
-                        dateObj.getDate() == date.day &&
-                        dateObj.getFullYear() == date.year &&
-                        dateObj.getMonth() + 1 == date.month;
+                        dateObj.getDate() === date.day &&
+                        dateObj.getFullYear() === date.year &&
+                        dateObj.getMonth() + 1 === date.month;
 
-                    if (prevMonth != date.month) {
+                    if (prevMonth !== date.month) {
                         prevMonth = date.month;
                         newMonth = true;
                     }
+
+                    // filter fetchedRegisteredData to get the data
+                    // for the date currently in the loop
+                    const registeredHabitsOfDate =
+                        fetchedRegisteredHabits.filter(registeredHabitDate => {
+                            const registeredHabitDateObj = new Date(
+                                registeredHabitDate.created_at
+                            );
+
+                            return (
+                                registeredHabitDateObj.getDate() === date.day &&
+                                registeredHabitDateObj.getFullYear() ===
+                                    date.year &&
+                                registeredHabitDateObj.getMonth() + 1 ===
+                                    date.month
+                            );
+                        });
 
                     return (
                         <DayCard
@@ -87,6 +123,7 @@ export default function CalendarSection() {
                             dateString={`${date.year}-${date.month}-${date.day}Z`}
                             newMonth={newMonth}
                             isToday={isToday}
+                            registeredHabits={registeredHabitsOfDate}
                         />
                     );
                 })}
