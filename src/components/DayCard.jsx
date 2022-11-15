@@ -21,7 +21,9 @@ const habits = [
         id: 5,
         name: "Take Supplements"
     }
-]; // This data will be fetched from server api, this array is a temporary solution
+]; // this array is a temporary solution
+// This data will be fetched from server and using context
+const API_URL = "http://127.0.0.1:8000/api/";
 
 export default function DayCard(props) {
     const { dateString, newMonth, isToday, registeredHabits } = props;
@@ -62,8 +64,14 @@ export default function DayCard(props) {
         );
 
         // call api for post to add registered habits
-        // (should skip the first 4 times its ran or check if checkedHabits changed from initial state)
-        console.log("api called (test)");
+        // (should skip the first 3 times its ran or check if checkedHabits changed from initial state)
+        if (percentageOfHabitsCompleted === 0) {
+            // call api (change API_URL to get from context)
+        }
+
+        console.log(
+            `api called (test)  |  checkedHabits: ${checkedHabits}  percentageOfHabitsCompleted: ${percentageOfHabitsCompleted}`
+        );
     }, [checkedHabits, totalAmountOfHabits]);
 
     return (
@@ -120,6 +128,8 @@ export default function DayCard(props) {
                                             setCheckedHabits(
                                                 checkedHabitsNewState
                                             );
+
+                                            registerHabit(habit.id);
                                         }}
                                         checked={checkedHabits[habit.id - 1]}
                                     />
@@ -132,4 +142,14 @@ export default function DayCard(props) {
             </div>
         </div>
     );
+}
+
+async function registerHabit(habit_id) {
+    try {
+        await fetch(`${API_URL}registered-habits?habit_id=${habit_id}`, {
+            method: "POST"
+        });
+    } catch (e) {
+        console.log(e);
+    }
 }
