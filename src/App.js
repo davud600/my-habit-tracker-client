@@ -9,7 +9,7 @@ function App() {
     return (
         <div>
             {/* Temporary */}
-            <div className='flex justify-center mt-10 mb-10'>
+            <div className='flex justify-center mt-10 mb-5'>
                 <span className='text-6xl'>My Habit Tracker</span>
             </div>
 

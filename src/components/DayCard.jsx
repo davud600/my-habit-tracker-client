@@ -62,16 +62,6 @@ export default function DayCard(props) {
         setPercentageOfHabitsCompleted(
             Math.round((amountOfCheckedHabits / totalAmountOfHabits) * 100)
         );
-
-        // call api for post to add registered habits
-        // (should skip the first 3 times its ran or check if checkedHabits changed from initial state)
-        if (percentageOfHabitsCompleted === 0) {
-            // call api (change API_URL to get from context)
-        }
-
-        console.log(
-            `api called (test)  |  checkedHabits: ${checkedHabits}  percentageOfHabitsCompleted: ${percentageOfHabitsCompleted}`
-        );
     }, [checkedHabits, totalAmountOfHabits]);
 
     return (
@@ -118,18 +108,28 @@ export default function DayCard(props) {
                                                 ...checkedHabits
                                             ];
 
-                                            checkedHabitsNewState[
-                                                habit.id - 1
-                                            ] =
-                                                e.target.checked === true
-                                                    ? 1
-                                                    : 0;
+                                            if (e.target.checked) {
+                                                checkedHabitsNewState[
+                                                    habit.id - 1
+                                                ] = 1;
+                                                registerHabit(
+                                                    habit.id,
+                                                    dateString
+                                                );
+                                            } else {
+                                                checkedHabitsNewState[
+                                                    habit.id - 1
+                                                ] = 0;
+
+                                                unRegisterHabit(
+                                                    habit.id,
+                                                    dateString
+                                                );
+                                            }
 
                                             setCheckedHabits(
                                                 checkedHabitsNewState
                                             );
-
-                                            registerHabit(habit.id);
                                         }}
                                         checked={checkedHabits[habit.id - 1]}
                                     />
@@ -144,11 +144,38 @@ export default function DayCard(props) {
     );
 }
 
-async function registerHabit(habit_id) {
+async function registerHabit(habitId, date) {
+    console.log(`habit_id: ${habitId}, date: ${date}`);
     try {
-        await fetch(`${API_URL}registered-habits?habit_id=${habit_id}`, {
-            method: "POST"
+        await fetch(`${API_URL}registered-habits`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "applicationa/json"
+            },
+            body: JSON.stringify({
+                habit_id: habitId,
+                date: date
+            })
         });
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+async function unRegisterHabit(habitId, date) {
+    try {
+        const res = await fetch(
+            `${API_URL}registered-habits/get-registered-habit-by-habit-and-date/${habitId}/${date}`
+        );
+        const data = await res.json();
+        const [registeredHabitToDelete] = data;
+
+        await fetch(
+            `${API_URL}registered-habits/${registeredHabitToDelete.id}`,
+            {
+                method: "DELETE"
+            }
+        );
     } catch (e) {
         console.log(e);
     }

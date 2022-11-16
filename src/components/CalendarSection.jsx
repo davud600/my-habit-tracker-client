@@ -6,7 +6,7 @@ const currYear = 2022;
 const dateObj = new Date();
 const dates = [];
 
-monthsLoop: for (let m = 11; m <= 12; m++) {
+monthsLoop: for (let m = 10; m <= 12; m++) {
     let monthDays;
 
     switch (m) {
@@ -50,7 +50,7 @@ monthsLoop: for (let m = 11; m <= 12; m++) {
             break;
     }
 
-    for (let d = 15; d <= monthDays; d++) {
+    for (let d = 1; d <= monthDays; d++) {
         let isToday =
             dateObj.getDate() === d &&
             dateObj.getFullYear() === currYear &&
@@ -69,9 +69,10 @@ monthsLoop: for (let m = 11; m <= 12; m++) {
 export default function CalendarSection() {
     let prevMonth;
     const [fetchedRegisteredHabits, setFetchedRegisteredHabits] = useState([]);
+    console.log(fetchedRegisteredHabits);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchRegisteredHabits = async () => {
             try {
                 const res = await fetch(`${API_URL}registered-habits`);
                 const data = await res.json();
@@ -82,7 +83,7 @@ export default function CalendarSection() {
             }
         };
 
-        fetchData();
+        fetchRegisteredHabits();
     }, []);
 
     return (
@@ -105,7 +106,7 @@ export default function CalendarSection() {
                     const registeredHabitsOfDate =
                         fetchedRegisteredHabits.filter(registeredHabitDate => {
                             const registeredHabitDateObj = new Date(
-                                registeredHabitDate.created_at
+                                registeredHabitDate.date
                             );
 
                             return (
