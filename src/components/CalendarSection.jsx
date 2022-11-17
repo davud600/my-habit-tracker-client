@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useHabits } from "../Habits";
 import DayCard from "./DayCard";
 
-const API_URL = "http://127.0.0.1:8000/api/";
 const currYear = 2022;
 const dateObj = new Date();
 const dates = [];
 
-monthsLoop: for (let m = 10; m <= 12; m++) {
+monthsLoop: for (let m = 11; m <= 12; m++) {
     let monthDays;
 
     switch (m) {
@@ -50,7 +50,7 @@ monthsLoop: for (let m = 10; m <= 12; m++) {
             break;
     }
 
-    for (let d = 1; d <= monthDays; d++) {
+    for (let d = 16; d <= monthDays; d++) {
         let isToday =
             dateObj.getDate() === d &&
             dateObj.getFullYear() === currYear &&
@@ -67,24 +67,9 @@ monthsLoop: for (let m = 10; m <= 12; m++) {
 }
 
 export default function CalendarSection() {
+    const { fetchedRegisteredHabits } = useHabits();
+
     let prevMonth;
-    const [fetchedRegisteredHabits, setFetchedRegisteredHabits] = useState([]);
-    console.log(fetchedRegisteredHabits);
-
-    useEffect(() => {
-        const fetchRegisteredHabits = async () => {
-            try {
-                const res = await fetch(`${API_URL}registered-habits`);
-                const data = await res.json();
-
-                setFetchedRegisteredHabits(data);
-            } catch (e) {
-                console.log(e);
-            }
-        };
-
-        fetchRegisteredHabits();
-    }, []);
 
     return (
         <section className='calendar-section'>

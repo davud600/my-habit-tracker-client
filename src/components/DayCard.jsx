@@ -1,68 +1,41 @@
 import React, { useEffect, useState } from "react";
-
-const habits = [
-    {
-        id: 1,
-        name: "Read (10 pages)"
-    },
-    {
-        id: 2,
-        name: "Meditate (10 min)"
-    },
-    {
-        id: 3,
-        name: "Study (2 hours)"
-    },
-    {
-        id: 4,
-        name: "Exercise"
-    },
-    {
-        id: 5,
-        name: "Take Supplements"
-    }
-]; // this array is a temporary solution
-// This data will be fetched from server and using context
-const API_URL = "http://127.0.0.1:8000/api/";
+import { useHabits } from "../Habits";
 
 export default function DayCard(props) {
     const { dateString, newMonth, isToday, registeredHabits } = props;
+    const {
+        habits,
+        initialCheckedHabits,
+        registerHabit,
+        unRegisterHabit,
+        AMOUNT_OF_HABITS
+    } = useHabits();
     const date = new Date(dateString);
 
-    const totalAmountOfHabits = habits.length;
-    let initialCheckedHabitsState = [];
-    for (let i = 0; i < totalAmountOfHabits; i++) {
-        initialCheckedHabitsState[i] = 0;
-    }
-
-    const [checkedHabits, setCheckedHabits] = useState(
-        initialCheckedHabitsState
-    );
+    const [checkedHabits, setCheckedHabits] = useState(initialCheckedHabits);
     const [percentageOfHabitsCompleted, setPercentageOfHabitsCompleted] =
         useState(0);
 
     useEffect(() => {
         let newCheckedHabits = [...checkedHabits];
-        for (let i = 0; i < checkedHabits.length; i++) {
-            for (let j = 0; j < registeredHabits.length; j++) {
-                if (i === registeredHabits[j].habit_id - 1) {
+        for (let i = 0; i < checkedHabits.length; i++)
+            for (let j = 0; j < registeredHabits.length; j++)
+                if (i === registeredHabits[j].habit_id - 1)
                     newCheckedHabits[i] = 1;
-                }
-            }
-        }
 
         setCheckedHabits(newCheckedHabits);
     }, [registeredHabits]);
 
     useEffect(() => {
         const amountOfCheckedHabits = checkedHabits.reduce(
-            (prevValue, currValue) => prevValue + currValue
+            (prevValue, currValue) => prevValue + currValue,
+            0
         );
 
         setPercentageOfHabitsCompleted(
-            Math.round((amountOfCheckedHabits / totalAmountOfHabits) * 100)
+            Math.round((amountOfCheckedHabits / AMOUNT_OF_HABITS) * 100)
         );
-    }, [checkedHabits, totalAmountOfHabits]);
+    }, [checkedHabits, AMOUNT_OF_HABITS]);
 
     return (
         <div className='day-card' id={isToday ? "today" : ""}>
@@ -142,41 +115,4 @@ export default function DayCard(props) {
             </div>
         </div>
     );
-}
-
-async function registerHabit(habitId, date) {
-    console.log(`habit_id: ${habitId}, date: ${date}`);
-    try {
-        await fetch(`${API_URL}registered-habits`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "applicationa/json"
-            },
-            body: JSON.stringify({
-                habit_id: habitId,
-                date: date
-            })
-        });
-    } catch (e) {
-        console.log(e);
-    }
-}
-
-async function unRegisterHabit(habitId, date) {
-    try {
-        const res = await fetch(
-            `${API_URL}registered-habits/get-registered-habit-by-habit-and-date/${habitId}/${date}`
-        );
-        const data = await res.json();
-        const [registeredHabitToDelete] = data;
-
-        await fetch(
-            `${API_URL}registered-habits/${registeredHabitToDelete.id}`,
-            {
-                method: "DELETE"
-            }
-        );
-    } catch (e) {
-        console.log(e);
-    }
 }
