@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 const API_URL = "http://127.0.0.1:8000/api/";
-const AMOUNT_OF_HABITS = 5; // SHOULD BE CHANGED IF AMOUNT OF HABITS CHANGES ON SERVER OR CLIENT
+const AMOUNT_OF_HABITS = 6; // SHOULD BE CHANGED IF AMOUNT OF HABITS CHANGES ON SERVER OR CLIENT
 let initialCheckedHabits = [];
 initialCheckedHabits.length = AMOUNT_OF_HABITS;
 initialCheckedHabits.fill(0);
@@ -43,7 +43,6 @@ export default function HabitsProvider({ children }) {
     }, []);
 
     async function registerHabit(habitId, date) {
-        console.log(`habit_id: ${habitId}, date: ${date}`);
         try {
             await fetch(`${API_URL}registered-habits`, {
                 method: "POST",
