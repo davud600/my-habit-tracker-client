@@ -50,7 +50,11 @@ monthsLoop: for (let m = 11; m <= 12; m++) {
             break;
     }
 
-    for (let d = 16; d <= monthDays; d++) {
+    // This is because we started at nov 16
+    let initialD = 1;
+    if (m === 11) initialD = 16;
+
+    for (let d = initialD; d <= monthDays; d++) {
         let isToday =
             dateObj.getDate() === d &&
             dateObj.getFullYear() === currYear &&
