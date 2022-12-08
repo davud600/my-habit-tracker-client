@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHabits } from "../Habits";
 import { Line } from "react-chartjs-2";
 import {
@@ -124,10 +124,6 @@ export default function GraphSection() {
     let prevMonth;
     const Data = dates.map(date => {
         let newMonth = false;
-        let isToday =
-            dateObj.getDate() === date.day &&
-            dateObj.getFullYear() === date.year &&
-            dateObj.getMonth() + 1 === date.month;
 
         if (prevMonth !== date.month) {
             prevMonth = date.month;
@@ -168,9 +164,7 @@ export default function GraphSection() {
         };
     });
 
-    console.log(Data);
-
-    const chartData = {
+    const [chartData, setChartData] = useState({
         labels: Data.map(data => data.date),
         datasets: [
             {
@@ -182,7 +176,23 @@ export default function GraphSection() {
                 borderWidth: 3
             }
         ]
-    };
+    });
+
+    useEffect(() => {
+        setChartData({
+            labels: Data.map(data => data.date),
+            datasets: [
+                {
+                    fill: true,
+                    label: "Habits Completed",
+                    data: Data.map(data => data.numOfHabitsCompleted),
+                    backgroundColor: "rgba(255, 50, 50, 0.3)",
+                    borderColor: "rgba(255, 35, 35, 0.6)",
+                    borderWidth: 3
+                }
+            ]
+        });
+    }, [fetchedRegisteredHabits, Data]);
 
     return (
         <section className='graph-section'>
