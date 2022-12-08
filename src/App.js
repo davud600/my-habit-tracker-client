@@ -11,8 +11,8 @@ function App() {
         <HabitsProvider>
             <div>
                 {/* Temporary */}
-                <div className='flex justify-center mt-10 mb-5'>
-                    <span className='text-6xl'>My Habit Tracker</span>
+                <div className='flex justify-center mt-5'>
+                    <span className='text-5xl'>My Habit Tracker</span>
                 </div>
 
                 <GraphSection />
