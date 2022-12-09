@@ -192,7 +192,7 @@ export default function GraphSection() {
                 }
             ]
         });
-    }, [fetchedRegisteredHabits, Data]);
+    }, [fetchedRegisteredHabits]);
 
     return (
         <section className='graph-section'>
