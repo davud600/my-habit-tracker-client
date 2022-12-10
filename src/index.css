@@ -30,6 +30,10 @@ code {
     height: 35rem;
 }
 
+.polar-area-chart {
+    height: 35rem;
+}
+
 .calendar-container {
     max-height: 80rem;
     /* overflow-y: scroll; */
@@ -85,6 +89,10 @@ code {
     }
 
     .line-chart {
+        height: 30rem;
+    }
+
+    .polar-area-chart {
         height: 30rem;
     }
 }
